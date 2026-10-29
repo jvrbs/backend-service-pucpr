@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:authserver-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+app:
+  security:
+    secret: test-only-secret-at-least-32-bytes-never-use-in-production
+  admin:
+    email: admin@test.invalid
+    password: TestOnly@123
