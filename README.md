@@ -5,7 +5,5 @@ Implementação acadêmica do **AuthServer** em Java 25 e Spring Boot 4.0.9.
 O projeto Maven está em [authserver/](authserver/). Consulte:
 
 - [README: configuração, execução, contratos e testes](authserver/README.md)
-- [Roteiro da apresentação parcial](authserver/docs/DEMO.md)
-- [Relatório de validação e inventário de arquivos](authserver/docs/ENTREGA.md)
 
 A primeira entrega implementa exatamente cinco dos dez endpoints de negócio previstos.
