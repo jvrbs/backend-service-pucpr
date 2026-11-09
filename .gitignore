@@ -1,0 +1,4 @@
+# Configuração local da IDE quando o repositório é aberto pela raiz.
+/.idea/
+*.iml
+/out/

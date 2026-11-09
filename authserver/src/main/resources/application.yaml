@@ -31,7 +31,7 @@ app:
     email: ${APP_ADMIN_EMAIL:}
     password: ${APP_ADMIN_PASSWORD:}
 springdoc:
-  paths-to-match: /users/**, /users, /health
+  paths-to-match: /users/**, /users, /health, /football/**
   swagger-ui:
     persist-authorization: false
     disable-swagger-default-url: true

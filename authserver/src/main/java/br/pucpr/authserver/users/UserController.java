@@ -1,5 +1,7 @@
 package br.pucpr.authserver.users;
 
+import br.pucpr.authserver.users.usecase.UserUseCase;
+
 import br.pucpr.authserver.users.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,9 +22,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/users")
 @Tag(name = "Usuários")
 public class UserController {
-    private final UserService service;
+    private final UserUseCase service;
 
-    public UserController(UserService service) { this.service = service; }
+    public UserController(UserUseCase service) { this.service = service; }
 
     @PostMapping
     @Operation(summary = "Cadastrar usuário", responses = {
