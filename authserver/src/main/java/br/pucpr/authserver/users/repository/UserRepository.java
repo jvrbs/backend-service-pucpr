@@ -1,4 +1,6 @@
-package br.pucpr.authserver.users;
+package br.pucpr.authserver.users.repository;
+
+import br.pucpr.authserver.users.User;
 
 import java.util.List;
 import java.util.Optional;

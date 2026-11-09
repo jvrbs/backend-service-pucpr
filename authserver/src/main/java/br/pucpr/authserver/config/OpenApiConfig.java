@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
     @Bean
     OpenAPI openAPI() {
-        return new OpenAPI().info(new Info().title("AuthServer").version("1.0-parcial")
-                .description("Primeira entrega: cinco endpoints de negócio. Erros seguem RFC 9457."))
+        return new OpenAPI().info(new Info().title("AuthServer e Futebol").version("1.1")
+                .description("Autenticação e catálogo de futebol. Consultas de futebol são públicas. Alterações exigem ADMIN."))
                 .components(new Components().addSecuritySchemes("bearerAuth", new SecurityScheme()
                         .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
     }

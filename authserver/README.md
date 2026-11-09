@@ -1,5 +1,9 @@
 # AuthServer — primeira entrega parcial
 
+Para importar e executar no Windows, consulte o [diagnóstico e roteiro do IntelliJ IDEA](docs/INTELLIJ.md).
+
+A [extensão de futebol](docs/FUTEBOL.md) acrescenta o catálogo e a carga automática no H2. As seções abaixo registram a entrega original do AuthServer.
+
 API REST acadêmica em Java. Esta entrega implementa **5 dos 10 endpoints de negócio** previstos: cadastro, login, listagem, consulta por ID e health check. O projeto evolui a estrutura original do Spring Initializr e mantém Maven, Java 25 e Spring Boot 4.0.9.
 
 ## Tecnologias e requisitos
