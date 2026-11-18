@@ -1,4 +1,8 @@
-package br.pucpr.authserver.users;
+package br.pucpr.authserver.users.usecase;
+
+import br.pucpr.authserver.users.UserController;
+import br.pucpr.authserver.users.repository.H2UserGateway;
+import br.pucpr.authserver.users.repository.UserRepository;
 
 import br.pucpr.authserver.exceptions.ApiException;
 import br.pucpr.authserver.exceptions.ApiExceptionHandler;
@@ -17,7 +21,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class UserServiceTests {
+class UserUseCaseTests {
     @Test
     void concurrentDuplicateIsTranslatedTo409() {
         var repository = mock(UserRepository.class);
@@ -25,7 +29,7 @@ class UserServiceTests {
         when(encoder.encode(anyString())).thenReturn("hash");
         when(repository.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("constraint",
                 new ConstraintViolationException("duplicate", new SQLException(), "uk_user_email")));
-        var service = new UserService(repository, encoder, mock(JwtService.class));
+        var service = new UserUseCase(new H2UserGateway(repository), encoder, mock(JwtService.class));
         assertThatThrownBy(() -> service.create(new CreateUserRequest("a@test.invalid", "Password@1", "Ana")))
                 .isInstanceOfSatisfying(ApiException.class, ex ->
                         org.assertj.core.api.Assertions.assertThat(ex.getStatus()).isEqualTo(HttpStatus.CONFLICT));
@@ -33,7 +37,7 @@ class UserServiceTests {
 
     @Test
     void unexpectedFailureReturnsGenericProblemWithoutInternalDetails() throws Exception {
-        var service = mock(UserService.class);
+        var service = mock(UserUseCase.class);
         when(service.findById(1L)).thenThrow(new IllegalStateException("secret-database-details"));
         var mvc = MockMvcBuilders.standaloneSetup(new UserController(service))
                 .setControllerAdvice(new ApiExceptionHandler()).build();

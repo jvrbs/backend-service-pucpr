@@ -1,9 +1,9 @@
 package br.pucpr.authserver;
 
 import br.pucpr.authserver.config.AppProperties;
-import br.pucpr.authserver.roles.RoleRepository;
+import br.pucpr.authserver.roles.repository.RoleRepository;
 import br.pucpr.authserver.security.ProblemAccessDeniedHandler;
-import br.pucpr.authserver.users.UserRepository;
+import br.pucpr.authserver.users.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -60,7 +60,7 @@ class AuthserverApplicationTests {
         // Spring 7's SpringExtension requires JUnit 6. Keep JUnit 5 and manage
         // the real Boot context explicitly, without replacing Spring Test jars.
         context = new SpringApplicationBuilder(AuthserverApplication.class)
-                .profiles("test").run("--server.port=0", "--server.address=127.0.0.1");
+                .profiles("test", "football-demo").run("--server.port=0", "--server.address=127.0.0.1");
         mvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext) context).apply(springSecurity()).build();
         mapper = context.getBean(ObjectMapper.class);
         users = context.getBean(UserRepository.class);
@@ -327,15 +327,102 @@ class AuthserverApplicationTests {
     }
 
     @Test
-    void swaggerDocumentsExactlyFiveBusinessOperationsAndBearerAuth() throws Exception {
+    void swaggerDocumentsAuthAndFootballOperations() throws Exception {
         JsonNode doc = json(mvc.perform(get("/api/v3/api-docs").contextPath("/api")).andExpect(status().isOk()));
-        assertThat(doc.get("paths").size()).isEqualTo(4);
+        assertThat(doc.at("/paths/~1football~1players/get").isObject()).isTrue();
+        assertThat(doc.at("/paths/~1football~1players~1{id}/delete/security/0/bearerAuth").isArray()).isTrue();
         assertThat(doc.at("/paths/~1users").size()).isEqualTo(2);
         assertThat(doc.at("/paths/~1users/get/security/0/bearerAuth").isArray()).isTrue();
         assertThat(doc.at("/paths/~1users/post/security").isMissingNode()).isTrue();
         assertThat(doc.at("/components/securitySchemes/bearerAuth/scheme").asText()).isEqualTo("bearer");
         mvc.perform(get("/api/swagger-ui/index.html").contextPath("/api")).andExpect(status().isOk());
     }
+
+    @Test
+    void footballSeedSupportsNestedListsAndCombinedRankings() throws Exception {
+        mvc.perform(get("/api/football/leagues").contextPath("/api"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[*].name",
+                        containsInAnyOrder("LaLiga", "Premier League", "Bundesliga", "Brasileirão Série A")));
+        long league = context.getBean(br.pucpr.authserver.football.repository.LeagueRepository.class)
+                .findAllByOrderByNameAsc().stream().filter(item -> item.getName().equals("LaLiga"))
+                .findFirst().orElseThrow().getId();
+        var teams = json(mvc.perform(get("/api/football/leagues/" + league + "/teams").contextPath("/api"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2))));
+        mvc.perform(get("/api/football/teams/" + teams.get(0).get("id").longValue() + "/players").contextPath("/api"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)));
+        for (String stat : List.of("goals", "appearances", "assists")) {
+            var ranking = json(mvc.perform(get("/api/football/players").contextPath("/api")
+                            .param("leagueId", Long.toString(league)).param("nationality", "brasil")
+                            .param("sortBy", stat).param("sortDir", "DESC").param("limit", "2"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2))));
+            assertThat(ranking.get(0).get(stat).intValue()).isGreaterThan(ranking.get(1).get(stat).intValue());
+            assertThat(ranking.get(0).get("nationality").asText()).isEqualTo("Brasil");
+        }
+        mvc.perform(get("/api/football/players").contextPath("/api").param("sortBy", "team"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/football/players").contextPath("/api").param("limit", "101"))
+                .andExpect(status().isUnprocessableContent());
+    }
+
+    @Test
+    void footballCrudRequiresAdminAndPersistsAssociations() throws Exception {
+        String bearer = "Bearer " + token();
+        var leagues = json(mvc.perform(get("/api/football/leagues").contextPath("/api")).andExpect(status().isOk()));
+        long originalLeague = leagues.get(0).get("id").longValue();
+        long newLeague = leagues.get(1).get("id").longValue();
+        var seededTeam = json(mvc.perform(get("/api/football/leagues/" + newLeague + "/teams").contextPath("/api"))
+                .andExpect(status().isOk())).get(0).get("id").longValue();
+        String teamBody = mapper.writeValueAsString(Map.of(
+                "name", "Time de Teste", "foundedOn", "2000-01-01", "supporters", 1000, "leagueId", originalLeague));
+        String teamPath = "/api/football/teams";
+        String playerPath = "/api/football/players";
+        mvc.perform(post(teamPath).contextPath("/api").contentType(MediaType.APPLICATION_JSON).content(teamBody))
+                .andExpect(status().isUnauthorized());
+        long teamId = json(mvc.perform(post(teamPath).contextPath("/api").header("Authorization", bearer)
+                        .contentType(MediaType.APPLICATION_JSON).content(teamBody)).andExpect(status().isCreated()))
+                .get("id").longValue();
+        teamPath += "/" + teamId;
+        mvc.perform(put(teamPath).contextPath("/api").header("Authorization", bearer)
+                        .contentType(MediaType.APPLICATION_JSON).content(teamBody.replace("Time de Teste", "Time Atualizado")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Time Atualizado"));
+        mvc.perform(put(teamPath + "/league/" + newLeague).contextPath("/api").header("Authorization", bearer))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.leagueId").value((int) newLeague));
+
+        var playerData = Map.of("name", "Jogador de Teste", "age", 25, "appearances", 32, "goals", 15,
+                "assists", 10, "marketValue", 1500000, "nationality", "Brasil", "teamId", teamId);
+        String playerBody = mapper.writeValueAsString(playerData);
+        long playerId = json(mvc.perform(post(playerPath).contextPath("/api").header("Authorization", bearer)
+                        .contentType(MediaType.APPLICATION_JSON).content(playerBody)).andExpect(status().isCreated()))
+                .get("id").longValue();
+        playerPath += "/" + playerId;
+        mvc.perform(put(playerPath).contextPath("/api").header("Authorization", bearer)
+                        .contentType(MediaType.APPLICATION_JSON).content(playerBody.replace("Jogador de Teste", "Jogador Atualizado")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Jogador Atualizado"));
+        mvc.perform(delete(playerPath).contextPath("/api")).andExpect(status().isUnauthorized());
+        register("football-user@test.invalid", PASSWORD, "Torcedor").andExpect(status().isCreated());
+        String userToken = json(login("football-user@test.invalid", PASSWORD).andExpect(status().isOk())).get("token").asText();
+        mvc.perform(delete(playerPath).contextPath("/api").header("Authorization", "Bearer " + userToken))
+                .andExpect(status().isForbidden());
+        mvc.perform(delete(teamPath).contextPath("/api").header("Authorization", bearer))
+                .andExpect(status().isConflict()).andExpect(content().contentTypeCompatibleWith("application/problem+json"));
+
+        var title = json(mvc.perform(get("/api/football/leagues/" + newLeague + "/titles").contextPath("/api"))
+                .andExpect(status().isOk())).get(0).get("id").intValue();
+        mvc.perform(put(playerPath + "/titles/" + title).contextPath("/api").header("Authorization", bearer))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.titleIds", contains(title)));
+        mvc.perform(put(playerPath + "/team/" + seededTeam).contextPath("/api").header("Authorization", bearer))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.teamId").value((int) seededTeam));
+        mvc.perform(get(playerPath).contextPath("/api"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.titleIds", contains(title)));
+        mvc.perform(delete(playerPath + "/titles/" + title).contextPath("/api").header("Authorization", bearer))
+                .andExpect(status().isNoContent());
+        mvc.perform(get(playerPath).contextPath("/api")).andExpect(jsonPath("$.titleIds", hasSize(0)));
+        mvc.perform(delete(teamPath).contextPath("/api").header("Authorization", bearer)).andExpect(status().isNoContent());
+        mvc.perform(get(teamPath).contextPath("/api")).andExpect(status().isNotFound());
+        mvc.perform(delete(playerPath).contextPath("/api").header("Authorization", bearer)).andExpect(status().isNoContent());
+        mvc.perform(get(playerPath).contextPath("/api")).andExpect(status().isNotFound());
+    }
+
 
     @Test
     void secondStageEndpointsAreNotImplemented() throws Exception {

@@ -1,4 +1,6 @@
-package br.pucpr.authserver.roles;
+package br.pucpr.authserver.roles.repository;
+
+import br.pucpr.authserver.roles.Role;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,0 +1,250 @@
+[
+  {
+    "name": "LaLiga",
+    "country": "Espanha",
+    "foundedOn": "1929-02-10",
+    "teams": [
+      {
+        "name": "Real Madrid",
+        "foundedOn": "1902-03-06",
+        "supporters": 3000000,
+        "titleSeason": "DEMO-01",
+        "players": [
+          {
+            "name": "Hugo Varela",
+            "age": 20,
+            "appearances": 18,
+            "goals": 2,
+            "assists": 1,
+            "marketValue": 2000000,
+            "nationality": "Espanha",
+            "champion": true
+          },
+          {
+            "name": "Iker Valdón",
+            "age": 21,
+            "appearances": 25,
+            "goals": 11,
+            "assists": 5,
+            "marketValue": 5000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      },
+      {
+        "name": "Barcelona",
+        "foundedOn": "1899-11-29",
+        "supporters": 3750000,
+        "players": [
+          {
+            "name": "Mateo Luque",
+            "age": 22,
+            "appearances": 32,
+            "goals": 20,
+            "assists": 9,
+            "marketValue": 8000000,
+            "nationality": "Espanha",
+            "champion": false
+          },
+          {
+            "name": "Nico Avelar",
+            "age": 23,
+            "appearances": 18,
+            "goals": 4,
+            "assists": 13,
+            "marketValue": 11000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Premier League",
+    "country": "Inglaterra",
+    "foundedOn": "1992-08-15",
+    "teams": [
+      {
+        "name": "Liverpool",
+        "foundedOn": "1892-06-03",
+        "supporters": 4000000,
+        "titleSeason": "DEMO-01",
+        "players": [
+          {
+            "name": "Aaron Bellwick",
+            "age": 24,
+            "appearances": 25,
+            "goals": 13,
+            "assists": 17,
+            "marketValue": 14000000,
+            "nationality": "Inglaterra",
+            "champion": true
+          },
+          {
+            "name": "Ethan Norbury",
+            "age": 25,
+            "appearances": 32,
+            "goals": 22,
+            "assists": 4,
+            "marketValue": 17000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      },
+      {
+        "name": "Chelsea",
+        "foundedOn": "1905-03-10",
+        "supporters": 4750000,
+        "players": [
+          {
+            "name": "Liam Hartwell",
+            "age": 26,
+            "appearances": 18,
+            "goals": 6,
+            "assists": 8,
+            "marketValue": 20000000,
+            "nationality": "Inglaterra",
+            "champion": false
+          },
+          {
+            "name": "Noah Redford",
+            "age": 27,
+            "appearances": 25,
+            "goals": 15,
+            "assists": 12,
+            "marketValue": 23000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Bundesliga",
+    "country": "Alemanha",
+    "foundedOn": "1963-08-24",
+    "teams": [
+      {
+        "name": "Bayern München",
+        "foundedOn": "1900-02-27",
+        "supporters": 5000000,
+        "titleSeason": "DEMO-01",
+        "players": [
+          {
+            "name": "Felix Weiler",
+            "age": 28,
+            "appearances": 32,
+            "goals": 24,
+            "assists": 16,
+            "marketValue": 3000000,
+            "nationality": "Alemanha",
+            "champion": true
+          },
+          {
+            "name": "Jonas Hartmann",
+            "age": 20,
+            "appearances": 18,
+            "goals": 8,
+            "assists": 3,
+            "marketValue": 6000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      },
+      {
+        "name": "Borussia Dortmund",
+        "foundedOn": "1909-12-19",
+        "supporters": 5750000,
+        "players": [
+          {
+            "name": "Lukas Bergwald",
+            "age": 21,
+            "appearances": 25,
+            "goals": 17,
+            "assists": 7,
+            "marketValue": 9000000,
+            "nationality": "Alemanha",
+            "champion": false
+          },
+          {
+            "name": "Emil Kernbach",
+            "age": 22,
+            "appearances": 32,
+            "goals": 26,
+            "assists": 11,
+            "marketValue": 12000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Brasileirão Série A",
+    "country": "Brasil",
+    "foundedOn": "1971-08-07",
+    "teams": [
+      {
+        "name": "Flamengo",
+        "foundedOn": "1895-11-17",
+        "supporters": 6000000,
+        "titleSeason": "DEMO-01",
+        "players": [
+          {
+            "name": "Caio Veredas",
+            "age": 23,
+            "appearances": 18,
+            "goals": 10,
+            "assists": 15,
+            "marketValue": 15000000,
+            "nationality": "Brasil",
+            "champion": true
+          },
+          {
+            "name": "Rafael Montevale",
+            "age": 24,
+            "appearances": 25,
+            "goals": 19,
+            "assists": 2,
+            "marketValue": 18000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      },
+      {
+        "name": "Palmeiras",
+        "foundedOn": "1914-08-26",
+        "supporters": 6750000,
+        "players": [
+          {
+            "name": "Breno Rios",
+            "age": 25,
+            "appearances": 32,
+            "goals": 3,
+            "assists": 6,
+            "marketValue": 21000000,
+            "nationality": "Brasil",
+            "champion": false
+          },
+          {
+            "name": "Lucas Valeverde",
+            "age": 26,
+            "appearances": 18,
+            "goals": 12,
+            "assists": 10,
+            "marketValue": 24000000,
+            "nationality": "Brasil",
+            "champion": false
+          }
+        ]
+      }
+    ]
+  }
+]
