@@ -8,7 +8,7 @@
 
 ## Vídeo de apresentação
 
-Link do YouTube: **[INSERIR LINK APÓS PUBLICAR O VÍDEO]**
+Link do YouTube: **[https://youtu.be/e4LbMB39xso]**
 
 ## Escopo da entrega
 
